@@ -1,0 +1,30 @@
+{
+  "data": {
+    "coordinates": {
+      "latitude": 22.25,
+      "longitude": 114.1667
+    },
+    "name": "Hong Kong",
+    "code": "HK",
+    "population": 6898686,
+    "updated_at": "2022-03-23T22:45:23.635Z",
+    "today": {
+      "deaths": 0,
+      "confirmed": 0
+    },
+    "latest_data": {
+      "deaths": 213,
+      "confirmed": 12177,
+      "recovered": 11888,
+      "critical": 76,
+      "calculated": {
+        "death_rate": 1.74919931017492,
+        "recovery_rate": 97.62667323642933,
+        "recovered_vs_death_ratio": null,
+        "cases_per_million_population": 0
+      }
+    },
+    "timeline": []
+  },
+  "_cacheHit": true
+}

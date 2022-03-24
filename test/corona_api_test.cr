@@ -1,4 +1,5 @@
 require "minitest/autorun"
+require "webmock"
 
 require "/../src/corona_api"
 
@@ -39,5 +40,22 @@ class CoronaApiTest < Minitest::Test
     assert_equal "HK", data.code
     assert_equal 6898686, data.population
     assert_equal Time.parse("2022-03-23T21:43:20.111Z", "%Y-%m-%dT%H:%M:%S.%3NZ", Time::Location::UTC), data.updated_at
+  end
+
+  def test_gets_data
+    WebMock.stub(:get, "https://corona-api.com/countries/HK").to_return(status: 200, body: File.read("test/files/hk.json"))
+    WebMock.stub(:get, "https://corona-api.com/countries/KR").to_return(status: 200, body: File.read("test/files/kr.json"))
+
+    data = CoronaApi.get_data("KR")
+
+    assert_equal "S. Korea", data.name
+    assert_equal "KR", data.code
+    assert_equal 48422644, data.population
+    assert_equal Time.parse("2022-03-23T22:27:16.214Z", "%Y-%m-%dT%H:%M:%S.%3NZ", Time::Location::UTC), data.updated_at
+
+    assert_equal 7, data.today.deaths
+    assert_equal 3273, data.today.confirmed
+
+    assert_equal 0.8180240078819847, data.latest_data.calculated.death_rate
   end
 end

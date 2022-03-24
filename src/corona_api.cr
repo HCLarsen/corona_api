@@ -15,7 +15,7 @@ module CoronaApi
     include JSON::Serializable
 
     getter deaths : Int32?
-    getter cases : Int32?
+    getter confirmed : Int32?
   end
 
   struct Calculated
@@ -45,5 +45,13 @@ module CoronaApi
     getter code : String
     getter population : Int32
     getter updated_at : Time
+    getter today : Today
+    getter latest_data : LatestData
+  end
+
+  def self.get_data(country_code : String) : Data
+    data = HTTP::Client.get("https://corona-api.com/countries/#{country_code}")
+
+    Data.from_json(data.body, root: "data")
   end
 end
