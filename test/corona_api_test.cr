@@ -42,8 +42,24 @@ class CoronaApiTest < Minitest::Test
     assert_equal Time.parse("2022-03-23T21:43:20.111Z", "%Y-%m-%dT%H:%M:%S.%3NZ", Time::Location::UTC), data.updated_at
   end
 
+  def test_parses_timeline_item
+    json = %({"updated_at":"2022-03-25T04:20:46.000Z","date":"2022-03-25","deaths":37406,"confirmed":3436460,"recovered":0,"new_confirmed":7053,"new_recovered":0,"new_deaths":75,"active":3399054})
+
+    data = CoronaApi::TimelineItem.from_json(json)
+
+    assert_equal Time.utc(2022, 3, 25), data.date
+    assert_equal 37406, data.deaths
+    assert_equal 3436460, data.confirmed
+    assert_equal 0, data.recovered
+    assert_equal 7053, data.new_confirmed
+    assert_equal 0, data.new_recovered
+    assert_equal 75, data.new_deaths
+    assert_equal 3399054, data.active
+
+    assert_equal "1.09", data.death_rate.not_nil!.format(decimal_places: 2)
+  end
+
   def test_gets_data
-    WebMock.stub(:get, "https://corona-api.com/countries/HK").to_return(status: 200, body: File.read("test/files/hk.json"))
     WebMock.stub(:get, "https://corona-api.com/countries/KR").to_return(status: 200, body: File.read("test/files/kr.json"))
 
     data = CoronaApi.get_data("KR")
@@ -57,5 +73,10 @@ class CoronaApiTest < Minitest::Test
     assert_equal 3273, data.today.confirmed
 
     assert_equal 0.8180240078819847, data.latest_data.calculated.death_rate
+
+    first_timeline = data.timeline[0]
+
+    assert_equal Time.utc(2022, 3, 23), first_timeline.date
+    assert_equal 490707, first_timeline.new_confirmed
   end
 end
